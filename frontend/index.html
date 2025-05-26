@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Product Inventory</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    input, button {
+      padding: 8px;
+      margin: 5px;
+    }
+    #output {
+      margin-top: 20px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Product Inventory</h2>
+
+  <h3>Add Product</h3>
+  <input type="text" id="addProductId" placeholder="Product ID">
+  <input type="text" id="addProductName" placeholder="Product Name">
+  <input type="text" id="addCategory" placeholder="Category">
+  <input type="number" id="addPrice" placeholder="Price">
+  <button onclick="addProduct()">Add</button>
+
+  <h3>Get Product</h3>
+  <input type="text" id="getProductId" placeholder="Product ID">
+  <button onclick="getProduct()">Get</button>
+
+  <h3>Get All Products</h3>
+  <button onclick="getAllProducts()">Get All</button>
+
+  <h3>Update Product</h3>
+  <input type="text" id="updateProductId" placeholder="Product ID">
+  <input type="text" id="updateKey" placeholder="Update Key">
+  <input type="text" id="updateValue" placeholder="Update Value">
+  <button onclick="updateProduct()">Update</button>
+
+  <h3>Delete Product</h3>
+  <input type="text" id="deleteProductId" placeholder="Product ID">
+  <button onclick="deleteProduct()">Delete</button>
+
+  <div id="output"></div>
+
+  <script>
+    const apiBase = 'https://.execute-api.ap-south-1.amazonaws.com/prod'; // Replace with your deployed API Gateway endpoint
+
+    function output(result) {
+      document.getElementById('output').textContent = JSON.stringify(result, null, 2);
+    }
+
+    async function addProduct() {
+      const body = {
+        productId: document.getElementById('addProductId').value,
+        name: document.getElementById('addProductName').value,
+        category: document.getElementById('addCategory').value,
+        price: parseFloat(document.getElementById('addPrice').value)
+      };
+      const res = await fetch(`${apiBase}/product`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      output(await res.json());
+    }
+
+    async function getProduct() {
+      const productId = document.getElementById('getProductId').value;
+      const res = await fetch(`${apiBase}/product?productId=${productId}`);
+      output(await res.json());
+    }
+
+    async function getAllProducts() {
+      const res = await fetch(`${apiBase}/products`);
+      output(await res.json());
+    }
+
+    async function updateProduct() {
+      const body = {
+        productId: document.getElementById('updateProductId').value,
+        updateKey: document.getElementById('updateKey').value,
+        updateValue: document.getElementById('updateValue').value
+      };
+      const res = await fetch(`${apiBase}/product`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      output(await res.json());
+    }
+
+    async function deleteProduct() {
+      const body = {
+        productId: document.getElementById('deleteProductId').value
+      };
+      const res = await fetch(`${apiBase}/product`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      output(await res.json());
+    }
+  </script>
+
+</body>
+</html>
